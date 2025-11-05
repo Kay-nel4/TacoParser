@@ -13,59 +13,77 @@ namespace LoggingKata
         static void Main(string[] args)
         {
             // Objective: Find the two Taco Bells that are the farthest apart from one another.
-            // Some of the TODO's are done for you to get you started. 
 
             logger.LogInfo("Log initialized");
 
-            // Use File.ReadAllLines(path) to grab all the lines from your csv file. 
-            // Optional: Log an error if you get 0 lines and a warning if you get 1 line
+            // The File.ReadAllLines will read from the TacoBell-US-AL.csv file.
+            //And the logger.LogError will notify if the method ReadAllLines returns empty with an error.
+            
             var lines = File.ReadAllLines(csvPath);
+            
+            if (lines.Length == 0)
+            {
+                logger.LogError("Error: Empty file");
+            }
 
-            // This will display the first item in your lines array
+            // Display the Line at index 0 to show that ReadAllLines is working.
             logger.LogInfo($"Lines: {lines[0]}");
 
-            // Create a new instance of your TacoParser class
+            // Created a new instance of the TacoParser Class that can be called in the main.
             var parser = new TacoParser();
 
-            // Use the Select LINQ method to parse every line in lines collection
+            // The LINQ method .Select will choose all lines in the csv file and parse them to an array called locations.
             var locations = lines.Select(parser.Parse).ToArray();
 
-  
-            // Complete the Parse method in TacoParser class first and then START BELOW ----------
-
-            // TODO: Create two `ITrackable` variables with initial values of `null`. 
-            // These will be used to store your two Taco Bells that are the farthest from each other.
+            // Created two variables from the "ITrackable" interface to hold null values that will later take on the 
+            //values of the two Taco Bell locations that will be tested for distance.
+            ITrackable bell1 = null;
+            ITrackable bell2 = null;
             
-            // TODO: Create a `double` variable to store the distance
-
-            // TODO: Add the Geolocation library to enable location comparisons: using GeoCoordinatePortable;
-            // Look up what methods you have access to within this library.
-
-            // NESTED LOOPS SECTION----------------------------
+            //This is a double variable called distance and initalized to 0 that will hold the distance from bell1 to bell2.
+            double distance = 0;
             
+            //Will be doing some more studying of the GeoCoordinate Library... Its crazy what you can do with this class! 
+            //I will be practicing and creating so much more with it.
+            
+            // Nested for loops that will loop through the array twice and pull out two Taco Bell locations to compare for distance.
+
             // FIRST FOR LOOP -
-            // TODO: Create a loop to go through each item in your collection of locations.
-            // This loop will let you select one location at a time to act as the "starting point" or "origin" location.
-            // Naming suggestion for variable: `locA`
+            //This will iterate through the array and grab the first location and assign it to a variable called locA...
+            //Then the latitude and longitude will be assigned to a new variable called corA using the method new GeoCoordinate.
+            
+            //SECOND FOR LOOP -
+            //Will sit inside the first for loop and iterate through the same array to find a second Taco Bell location that will then
+            //be stored as locB with the latitude and longitude assigned to corB and once again use the GeoCoordinate method.
+            //Finally using the GetDistanceTo method corA and corB will be compared and return the two Bells with the greatest distance.
+            //These are assigned to bell1 and bell2 and the names will be printed to the console.
+            //Pull from the ConvertDistance class and use the ConvertMetersToMiles method and return the final distance as a double
+            //rounded to the first decimal in miles.
+            for (int i = 0; i < locations.Length; i++)
+            {
+                var locA = locations[i];
+                var corA = new GeoCoordinate();
+                corA.Latitude = locA.Location.Latitude;
+                corA.Longitude = locA.Location.Longitude;
+                
+                for (int j = 1; j < locations.Length; j++)
+                {
+                    var locB = locations[j];
+                    var corB = new GeoCoordinate(locB.Location.Latitude, locB.Location.Longitude);
 
-            // TODO: Once you have locA, create a new Coordinate object called `corA` with your locA's latitude and longitude.
-
-            // SECOND FOR LOOP -
-            // TODO: Now, Inside the scope of your first loop, create another loop to iterate through locations again.
-            // This allows you to pick a "destination" location for each "origin" location from the first loop. 
-            // Naming suggestion for variable: `locB`
-
-            // TODO: Once you have locB, create a new Coordinate object called `corB` with your locB's latitude and longitude.
-
-            // TODO: Now, still being inside the scope of the second for loop, compare the two locations using `.GetDistanceTo()` method, which returns a double.
-            // If the distance is greater than the currently saved distance, update the distance variable and the two `ITrackable` variables you set above.
-
-            // NESTED LOOPS SECTION COMPLETE ---------------------
-
-            // Once you've looped through everything, you've found the two Taco Bells farthest away from each other.
-            // Display these two Taco Bell locations to the console.
-
-
+                    if (corA.GetDistanceTo(corB) > distance)
+                    {
+                        distance = corA.GetDistanceTo(corB);
+                        bell1 = locA;
+                        bell2 = locB;
+                    }
+                }
+            }
+            double meters = distance;
+            double miles = ConvertDistance.ConvertMetersToMiles(meters);
+            logger.LogInfo($"Bell1: {bell1.Name}, Bell2: {bell2.Name}");
+            logger.LogInfo($"Distance: {Math.Round(miles, 1)} miles)");
+            //meters to miles conversion
             
         }
     }

@@ -9,44 +9,43 @@
         
         public ITrackable Parse(string line)
         {
-            logger.LogInfo("Begin parsing");
-
-            // Take your line and use line.Split(',') to split it up into an array of strings, separated by the char ','
+            logger.LogInfo("Parsing...");
+            // Splitting each line from the Taco Bell CSV file into seperate cells seperated by a ,.
             var cells = line.Split(',');
 
-            // If your array's Length is less than 3, something went wrong
+            // A notification of error if the Split method returns less than 3 cells.
             if (cells.Length < 3)
             {
-                // Log error message and return null
+                // Print error message and return null if cells equal less than 3.
+                logger.LogError($"Invalid line: {line}");
                 return null; 
             }
+            
+            //Created an in instance of latitude from cells array that will start at 0.
+            double lat = double.Parse(cells[0]);
+            
+            
+            //Created an instance of longitude from the same cells array that will start at 1.
+            double lon = double.Parse(cells[1]);
+            
+            
+            //Created a name instance from the cells array that will start at 2.
+            var name = cells[2];
 
-            // TODO: Grab the latitude from your array at index 0
-            // You're going to need to parse your string as a `double`
-            // which is similar to parsing a string as an `int`
+            //New instance of the Point struct that will properly set the latitude and longitude.
+            Point location = new Point
+            {
+                Latitude = lat,
+                Longitude = lon
+            };
             
-            
-            // TODO: Grab the longitude from your array at index 1
-            // You're going to need to parse your string as a `double`
-            // which is similar to parsing a string as an `int`
-            
-            
-            // TODO: Grab the name from your array at index 2
-            
+            //Created a TacoBell class to hold the name and location, this class conforms to the ITrackable Interface.
+            //Created an instance of the Taco Bell class.
+           TacoBell tacoBell = new TacoBell(name, location);
+           tacoBell.Name = name;
+           tacoBell.Location = location;
 
-            // TODO: Create a TacoBell class
-            // that conforms to ITrackable
-            
-            // TODO: Create an instance of the Point Struct
-            // TODO: Set the values of the point correctly (Latitude and Longitude) 
-
-            // TODO: Create an instance of the TacoBell class
-            // TODO: Set the values of the class correctly (Name and Location)
-
-            // TODO: Then, return the instance of your TacoBell class,
-            // since it conforms to ITrackable
-
-            return null;
+            return tacoBell;
         }
     }
 }
